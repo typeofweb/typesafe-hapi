@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "strict": true,
+    "paths": {
+      "typesafe-hapi": ["./hapi"]
+    }
+  }
+}
