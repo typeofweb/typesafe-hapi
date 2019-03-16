@@ -20,7 +20,7 @@ import * as zlib from 'zlib';
 
 import { MimosOptions } from 'mimos';
 import { SealOptions, SealOptionsSub } from 'iron';
-import { ValidationOptions, SchemaMap, Schema } from 'typesafe-joi';
+import { ValidationOptions, SchemaMap, Schema, SchemaLike, SchemaValue } from 'typesafe-joi';
 import Podium = require('podium');
 import { PolicyOptionVariants, EnginePrototypeOrObject, PolicyOptions, EnginePrototype, Policy, ClientApi, ClientOptions } from 'catbox';
 
@@ -353,7 +353,7 @@ export interface RequestRoute {
          *     requires any authentication.
          * [See docs](https://hapijs.com/api/17.0.1#-requestrouteauthaccessrequest)
          */
-        access(request: Request): boolean;
+        access(request: Request<any>): boolean;
     };
 }
 
@@ -384,7 +384,7 @@ export interface RequestQuery {
  * HTTP server callback (which is available via [request.raw.req](https://github.com/hapijs/hapi/blob/master/API.md#request.raw)). The request properties change throughout
  * the request [lifecycle](https://github.com/hapijs/hapi/blob/master/API.md#request-lifecycle).
  */
-export interface Request extends Podium {
+export interface Request<Payload extends SchemaLike> extends Podium {
     /**
      * Application-specific state. Provides a safe place to store application data without potential conflicts with the framework. Should not be used by plugins which should use plugins[name].
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-requestapp)
@@ -480,7 +480,8 @@ export interface Request extends Podium {
      * The request payload based on the route payload.output and payload.parse settings.
      * TODO check this typing and add references / links.
      */
-    readonly payload: stream.Readable | Buffer | string | object;
+    readonly payload: SchemaValue<Payload>
+    // readonly payload: stream.Readable | Buffer | string | object;
 
     /**
      * Plugin-specific state. Provides a place to store and pass request-level plugin data. The plugins is an object where each key is a plugin name and the value is the state.
@@ -1010,7 +1011,7 @@ export interface ResponseToolkit {
      * The [request] object. This is a duplication of the request lifecycle method argument used by
      * [toolkit decorations](https://github.com/hapijs/hapi/blob/master/API.md#server.decorate()) to access the current request.
      */
-    readonly request: Readonly<Request>;
+    readonly request: Readonly<Request<any>>;
 
     /**
      * Used by the [authentication] method to pass back valid credentials where:
@@ -1405,7 +1406,7 @@ export type RouteOptionsPreArray = RouteOptionsPreAllOptions[];
 /**
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionspre)
  */
-export type RouteOptionsPreAllOptions = RouteOptionsPreObject | RouteOptionsPreObject[] | Lifecycle.Method;
+export type RouteOptionsPreAllOptions = RouteOptionsPreObject | RouteOptionsPreObject[] | Lifecycle.Method<any, any>;
 
 /**
  * An object with:
@@ -1418,7 +1419,7 @@ export interface RouteOptionsPreObject {
     /**
      * a lifecycle method.
      */
-    method: Lifecycle.Method;
+    method: Lifecycle.Method<any, any>;
     /**
      * key name used to assign the response of the method to in request.pre and request.preResponses.
      */
@@ -1448,7 +1449,7 @@ export type RouteOptionsResponseSchema =
  * Processing rules for the outgoing response.
  * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsresponse)
  */
-export interface RouteOptionsResponse {
+export interface RouteOptionsResponse<Response extends SchemaLike> {
     /**
      * Default value: 200.
      * The default HTTP status code when the payload is considered empty. Value can be 200 or 204. Note that a 200 status code is converted to a 204 only at the time of response transmission (the
@@ -1506,7 +1507,7 @@ export interface RouteOptionsResponse {
      * output.payload. If an error is thrown, the error is processed according to failAction.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsresponseschema)
      */
-    schema?: RouteOptionsResponseSchema;
+    schema?: Response;
 
     /**
      * Default value: none.
@@ -1622,7 +1623,7 @@ export type RouteOptionsSecure = boolean | RouteOptionsSecureObject;
  * Request input validation rules for various request components.
  * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidate)
  */
-export interface RouteOptionsValidate {
+export interface RouteOptionsValidate<Payload extends SchemaLike> {
     /**
      * Default value: none.
      * An optional object with error fields copied into every validation error response.
@@ -1681,7 +1682,7 @@ export interface RouteOptionsValidate {
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidatepayload)
      * @default true
      */
-    payload?: RouteOptionsResponseSchema;
+    payload?: Payload;
 
     /**
      * Validation rules for incoming request URI query component (the key-value part of the URI between '?' and '#'). The query is parsed into its individual key-value pairs, decoded, and stored in
@@ -1719,7 +1720,7 @@ export interface RouteOptionsApp {
  * Each route can be customized to change the default behavior of the request lifecycle.
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#route-options)
  */
-export interface RouteOptions {
+export interface RouteOptions<Payload extends SchemaLike = any, Response extends SchemaLike = any> {
     /**
      * Application-specific route configuration state. Should not be used by plugins which should use options.plugins[name] instead.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsapp)
@@ -1819,7 +1820,9 @@ export interface RouteOptions {
      * generator. Note: handlers using a fat arrow style function cannot be bound to any bind property. Instead, the bound context is available under h.context.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionshandler)
      */
-    handler?: Lifecycle.Method | object;
+    // @todo
+    // handler?: Lifecycle.Method<Payload, Response> | object;
+    handler?: Lifecycle.Method<Payload, Response>;
 
     /**
      * Default value: none.
@@ -1912,7 +1915,7 @@ export interface RouteOptions {
      * Processing rules for the outgoing response.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsresponse)
      */
-    response?: RouteOptionsResponse;
+    response?: RouteOptionsResponse<Response>;
 
     /**
      * Default value: false (security headers disabled).
@@ -1964,7 +1967,7 @@ export interface RouteOptions {
      * Request input validation rules for various request components.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidate)
      */
-    validate?: RouteOptionsValidate;
+    validate?: RouteOptionsValidate<Payload>;
 }
 
 /* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
@@ -2014,7 +2017,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    authenticate(request: Request, h: ResponseToolkit): Lifecycle.ReturnValue;
+    authenticate(request: Request<any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * A lifecycle method to authenticate the request payload.
@@ -2025,7 +2028,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    payload?(request: Request, h: ResponseToolkit): Lifecycle.ReturnValue;
+    payload?(request: Request<any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * A lifecycle method to decorate the response with authentication headers before the response headers or payload is written.
@@ -2033,7 +2036,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    response?(request: Request, h: ResponseToolkit): Lifecycle.ReturnValue;
+    response?(request: Request<any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * a method used to verify the authentication credentials provided
@@ -2131,7 +2134,7 @@ export interface ServerAuth {
      * include verifying scope, entity, or other route properties.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-await-serverauthteststrategy-request)
      */
-    test(strategy: string, request: Request): Promise<AuthenticationData>;
+    test(strategy: string, request: Request<any>): Promise<AuthenticationData>;
 
     /**
      * Verify a request's authentication credentials against an authentication strategy.
@@ -2143,7 +2146,7 @@ export interface ServerAuth {
      * are still valid (e.g. have not been revoked or expired). It does not include verifying scope,
      * entity, or other route properties.
      */
-    verify(request: Request): Promise<void>;
+    verify(request: Request<any>): Promise<void>;
 }
 
 export type CachePolicyOptions<T> = PolicyOptionVariants<T> & {
@@ -2304,8 +2307,8 @@ export interface RequestEvent {
 }
 
 export type LogEventHandler = (event: LogEvent, tags: { [key: string]: true }) => void;
-export type RequestEventHandler = (request: Request, event: RequestEvent, tags: { [key: string]: true }) => void;
-export type ResponseEventHandler = (request: Request) => void;
+export type RequestEventHandler = (request: Request<any>, event: RequestEvent, tags: { [key: string]: true }) => void;
+export type ResponseEventHandler = (request: Request<any>) => void;
 export type RouteEventHandler = (route: RequestRoute) => void;
 export type StartEventHandler = () => void;
 export type StopEventHandler = () => void;
@@ -2481,7 +2484,7 @@ export interface ServerExtEventsObject {
 }
 
 export interface RouteExtObject {
-    method: Lifecycle.Method;
+    method: Lifecycle.Method<any, any>;
     options?: ServerExtOptions;
 }
 
@@ -2523,7 +2526,7 @@ export interface ServerExtEventsRequestObject {
      * * * this - the object provided via options.bind or the current active context set with server.bind().
      * * request extension points: a lifecycle method.
      */
-    method: Lifecycle.Method | Lifecycle.Method[];
+    method: Lifecycle.Method<any, any> | Lifecycle.Method<any, any>[];
     /**
      * (optional) an object with the following:
      * * before - a string or array of strings of plugin names this method must execute before (on the same event). Otherwise, extension methods are executed in the order added.
@@ -2703,7 +2706,7 @@ export interface ServerInjectResponse extends Shot.ResponseObject {
     /**
      * the request object.
      */
-    request: Request;
+    request: Request<any>;
 }
 
 /**
@@ -3159,7 +3162,7 @@ export interface HandlerDecorations {
  * * rules - route custom rules object. The object is passed to each rules processor registered with server.rules(). Cannot be used if route.options.rules is defined.
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverrouteroute)
  */
-export interface ServerRoute {
+export interface ServerRoute<Payload extends SchemaLike, Response extends SchemaLike> {
     /**
      * (required) the absolute path used to match incoming requests (must begin with '/'). Incoming requests are compared to the configured paths based on the server's router configuration. The path
      * can include named parameters enclosed in {} which will be matched against literal values in the request as described in Path parameters. For context [See
@@ -3183,13 +3186,17 @@ export interface ServerRoute {
     /**
      * (required when handler is not set) the route handler function called to generate the response after successful authentication and validation.
      */
-    handler?: Lifecycle.Method | HandlerDecorations;
+    // @todo
+    // handler?: Lifecycle.Method<Payload, Response> | HandlerDecorations;
+    handler?: Lifecycle.Method<Payload, Response>;// | HandlerDecorations;
 
     /**
      * additional route options. The options value can be an object or a function that returns an object using the signature function(server) where server is the server the route is being added to
      * and this is bound to the current realm's bind option.
      */
-    options?: RouteOptions | ((server: Server) => RouteOptions);
+    // @todo
+    // options?: RouteOptions | ((server: Server) => RouteOptions);
+    options?: RouteOptions<Payload, Response>;
 
     /**
      * route custom rules object. The object is passed to each rules processor registered with server.rules(). Cannot be used if route.options.rules is defined.
@@ -3225,7 +3232,7 @@ export interface ServerStateCookieOptions {
      * cookie is automatically added to the response with the provided value. The value can be
      * a function with signature async function(request) where:
      */
-    autoValue?(request: Request): void;
+    autoValue?(request: Request<any>): void;
 
     /**
      * encoding performs on the provided value before serialization. Options are:
@@ -3333,7 +3340,7 @@ export interface ServerState {
  * If the property is set to a function, the function uses the signature function(method) and returns the route default configuration.
  */
 export interface HandlerDecorationMethod {
-    (route: RouteOptions, options: any): Lifecycle.Method;
+    (route: RouteOptions, options: any): Lifecycle.Method<any, any>;
     defaults?: RouteOptions | ((method: any) => RouteOptions);
 }
 
@@ -3605,9 +3612,9 @@ export class Server {
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverdecoratetype-property-method-options)
      */
     decorate(type: 'handler', property: DecorateName, method: HandlerDecorationMethod, options?: {apply?: boolean, extend?: boolean}): void;
-    decorate(type: 'request', property: DecorateName, method: (existing: ((...args: any[]) => any)) => (request: Request) => DecorationMethod<Request>, options: {apply: true, extend: true}): void;
-    decorate(type: 'request', property: DecorateName, method: (request: Request) => DecorationMethod<Request>, options: {apply: true, extend?: boolean}): void;
-    decorate(type: 'request', property: DecorateName, method: DecorationMethod<Request>, options?: {apply?: boolean, extend?: boolean}): void;
+    decorate(type: 'request', property: DecorateName, method: (existing: ((...args: any[]) => any)) => (request: Request<any>) => DecorationMethod<Request<any>>, options: {apply: true, extend: true}): void;
+    decorate(type: 'request', property: DecorateName, method: (request: Request<any>) => DecorationMethod<Request<any>>, options: {apply: true, extend?: boolean}): void;
+    decorate(type: 'request', property: DecorateName, method: DecorationMethod<Request<any>>, options?: {apply?: boolean, extend?: boolean}): void;
     decorate(type: 'toolkit', property: DecorateName, method: (existing: ((...args: any[]) => any)) => DecorationMethod<ResponseToolkit>, options: {apply?: boolean, extend: true}): void;
     decorate(type: 'toolkit', property: DecorateName, method: DecorationMethod<ResponseToolkit>, options?: {apply?: boolean, extend?: boolean}): void;
     decorate(type: 'server', property: DecorateName, method: (existing: ((...args: any[]) => any)) => DecorationMethod<Server>, options: {apply?: boolean, extend: true}): void;
@@ -3687,7 +3694,7 @@ export class Server {
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverextevent-method-options)
      */
     ext(event: ServerExtType, method: ServerExtPointFunction, options?: ServerExtOptions): void;
-    ext(event: ServerRequestExtType, method: Lifecycle.Method, options?: ServerExtOptions): void;
+    ext(event: ServerRequestExtType, method: Lifecycle.Method<any, any>, options?: ServerExtOptions): void;
 
     /**
      * Initializes the server (starts the caches, finalizes plugin registration) but does not start listening on the connection port.
@@ -3858,7 +3865,9 @@ export class Server {
      * Note that the options object is deeply cloned (with the exception of bind which is shallowly copied) and cannot contain any values that are unsafe to perform deep copy on.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverrouteroute)
      */
-    route(route: ServerRoute | ServerRoute[]): void;
+    // @todo
+    // route<Payload extends SchemaLike, Response extends SchemaLike>(route: ServerRoute<Payload, Response> | ServerRoute<Payload, Response>[]): void;
+    route<Payload extends SchemaLike, Response extends SchemaLike>(route: ServerRoute<Payload, Response>): void;
 
     /**
      * Defines a route rules processor for converting route rules object into route configuration where:
@@ -3978,7 +3987,8 @@ export namespace Lifecycle {
      * * h - the response toolkit the handler must call to set a response and return control back to the framework.
      * * err - an error object availble only when the method is used as a failAction value.
      */
-    type Method = (request: Request, h: ResponseToolkit, err?: Error) => ReturnValue;
+    // @todo
+    type Method<Payload extends SchemaLike, Response extends SchemaLike> = (request: Request<Payload>, h: ResponseToolkit, err?: Error) => SchemaValue<Response>;
 
     /**
      * Each lifecycle method must return a value or a promise that resolves into a value. If a lifecycle method returns
@@ -4016,7 +4026,7 @@ export namespace Lifecycle {
      * * * err - the error object.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-failaction-configuration)
      */
-    type FailAction = 'error' | 'log' | 'ignore' | Method;
+    type FailAction = 'error' | 'log' | 'ignore' | Method<any, any>;
 }
 
 export namespace Util {

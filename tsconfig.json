@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "strict": true,
+    "esModuleInterop": true,
     "paths": {
       "typesafe-hapi": ["./hapi"]
     }
