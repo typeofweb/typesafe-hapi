@@ -1,12 +1,15 @@
 {
   "name": "typesafe-hapi",
   "description": "A fork of hapi that produces typed results TypeScript",
-  "version": "0.0.0-1",
+  "version": "0.0.0-0",
   "main": "hapi.js",
   "types": "hapi.d.ts",
   "repository": "https://github.com/mmiszy/typesafe-hapi.git",
   "author": "Michal Miszczyszyn <michal@mmiszy.pl>",
   "license": "MIT",
+  "scripts": {
+    "test": "tsc --noEmit"
+  },
   "keywords": [
     "hapi",
     "typescript",
