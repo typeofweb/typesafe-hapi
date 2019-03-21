@@ -1,4 +1,3 @@
-// Type definitions for hapi 18.3
 // Project: https://github.com/hapijs/hapi, https://hapijs.com
 // Definitions bby: Michał Miszczyszyn <https://github.com/mmiszy>
 // Based on definitions by: Rafael Souza Fijalkowski <https://github.com/rafaelsouzaf>
@@ -480,7 +479,7 @@ export interface Request<Payload extends SchemaLike, Query extends SchemaLike> e
      * The request payload based on the route payload.output and payload.parse settings.
      * TODO check this typing and add references / links.
      */
-    readonly payload: SchemaValue<Payload>
+    readonly payload: SchemaValue<Payload>;
     // readonly payload: stream.Readable | Buffer | string | object;
 
     /**
@@ -2526,7 +2525,7 @@ export interface ServerExtEventsRequestObject {
      * * * this - the object provided via options.bind or the current active context set with server.bind().
      * * request extension points: a lifecycle method.
      */
-    method: Lifecycle.Method<any, any, any> | Lifecycle.Method<any, any, any>[];
+    method: Lifecycle.Method<any, any, any> | Array<Lifecycle.Method<any, any, any>>;
     /**
      * (optional) an object with the following:
      * * before - a string or array of strings of plugin names this method must execute before (on the same event). Otherwise, extension methods are executed in the order added.
@@ -3188,7 +3187,7 @@ export interface ServerRoute<Payload extends SchemaLike, Query extends SchemaLik
      */
     // @todo
     // handler?: Lifecycle.Method<Payload, Response> | HandlerDecorations;
-    handler?: Lifecycle.Method<Payload, Query, Response>;// | HandlerDecorations;
+    handler?: Lifecycle.Method<Payload, Query, Response>; // | HandlerDecorations;
 
     /**
      * additional route options. The options value can be an object or a function that returns an object using the signature function(server) where server is the server the route is being added to

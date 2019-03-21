@@ -3,12 +3,12 @@
   "description": "A fork of hapi that produces typed results TypeScript",
   "version": "0.0.0-0",
   "main": "hapi.js",
-  "types": "hapi.d.ts",
+  "types": "index.d.ts",
   "repository": "https://github.com/mmiszy/typesafe-hapi.git",
   "author": "Michal Miszczyszyn <michal@mmiszy.pl>",
   "license": "MIT",
   "scripts": {
-    "test": "tsc --noEmit"
+    "test": "dtslint"
   },
   "keywords": [
     "hapi",
@@ -31,6 +31,7 @@
     "typesafe-joi": "^1.0.0-beta5"
   },
   "devDependencies": {
+    "dtslint": "0.5.5",
     "typescript": "~3.3.3333"
   }
 }

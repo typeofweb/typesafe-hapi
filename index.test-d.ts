@@ -1,4 +1,4 @@
-import Hapi from 'typesafe-hapi'
+import Hapi from '.';
 import Joi from 'typesafe-joi';
 
 const server = new Hapi.Server();
@@ -38,15 +38,15 @@ server.route({
   },
   handler(request) {
     // type of `payload` is automatically inferred based on `options.validate.payload` schema
-    const payload = request.payload;
-    const query = request.query;
+    const payload = request.payload; // $ExpectType { user: { name: string; email: string; } & {}; } & {}
+    const query = request.query; // $ExpectType {} & { search?: string | null | undefined; }
 
     // return type is also automatically inferred based on `options.response.schema`
     return {
       id: String(Math.random()),
-      name: payload.user.name,
-      email: payload.user.email,
-      search: query.search,
+      name: payload.user.name, // $ExpectType string
+      email: payload.user.email, // $ExpectType string
+      search: query.search, // $ExpectType string | null | undefined
     };
   },
-})
+});
