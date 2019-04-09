@@ -1,5 +1,5 @@
 // Project: https://github.com/hapijs/hapi, https://hapijs.com
-// Definitions bby: Michał Miszczyszyn <https://github.com/mmiszy>
+// Definitions by: Michał Miszczyszyn <https://github.com/mmiszy>
 // Based on definitions by: Rafael Souza Fijalkowski <https://github.com/rafaelsouzaf>
 //                 Justin Simms <https://github.com/jhsimms>
 //                 Simon Schick <https://github.com/SimonSchick>
@@ -3987,7 +3987,7 @@ export namespace Lifecycle {
      * * err - an error object availble only when the method is used as a failAction value.
      */
     // @todo
-    type Method<Payload extends SchemaLike, Query extends SchemaLike, Response extends SchemaLike> = (request: Request<Payload, Query>, h: ResponseToolkit, err?: Error) => SchemaValue<Response>;
+    type Method<Payload extends SchemaLike, Query extends SchemaLike, Response extends SchemaLike> = (request: Request<Payload, Query>, h: ResponseToolkit, err?: Error) => SchemaValue<Response> | Promise<SchemaValue<Response>>;
 
     /**
      * Each lifecycle method must return a value or a promise that resolves into a value. If a lifecycle method returns
