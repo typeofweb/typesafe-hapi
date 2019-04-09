@@ -1,7 +1,7 @@
 {
   "name": "typesafe-hapi",
   "description": "A fork of hapi that produces typed results TypeScript",
-  "version": "0.0.0-2",
+  "version": "0.0.0",
   "main": "hapi.js",
   "types": "index.d.ts",
   "repository": "https://github.com/mmiszy/typesafe-hapi.git",
