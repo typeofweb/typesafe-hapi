@@ -1,4 +1,3 @@
-// Type definitions for @hapi/hapi 18.2
 // Project: https://github.com/hapijs/hapi, https://hapijs.com
 // Definitions by: Michał Miszczyszyn <https://github.com/mmiszy>
 // Based on definitions by: Rafael Souza Fijalkowski <https://github.com/rafaelsouzaf>
