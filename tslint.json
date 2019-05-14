@@ -3,6 +3,7 @@
   "rules": {
     "no-redundant-jsdoc": false,
     "max-line-length": false,
-    "no-unnecessary-generics": false
+    "no-unnecessary-generics": false,
+    "strict-export-declare-modifiers": false
   }
 }
