@@ -16,22 +16,22 @@
     "validation"
   ],
   "dependencies": {
-    "@types/boom": "^7.2.1",
-    "@types/catbox": "^10.0.6",
-    "@types/iron": "^5.0.1",
-    "@types/mimos": "^3.0.1",
+    "@types/hapi__boom": "7.4.0",
+    "@types/hapi__catbox": "10.2.0",
+    "@types/hapi__iron": "5.1.0",
+    "@types/hapi__mimos": "4.1.0",
+    "@types/hapi__podium": "3.4.0",
+    "@types/hapi__shot": "4.1.0",
     "@types/node": "*",
-    "@types/podium": "^1.0.0",
-    "@types/shot": "^4.0.0",
-    "typesafe-joi": "^1.0.0-beta5"
+    "typesafe-joi": "2.0.1"
   },
   "peerDependencies": {
-    "hapi": "^18.1.0",
-    "typescript": "~3.3.3333",
-    "typesafe-joi": "^1.0.0-beta5"
+    "@hapi/hapi": "^18.3.1",
+    "typescript": "~3.4.5",
+    "typesafe-joi": "^2.0.1"
   },
   "devDependencies": {
-    "dtslint": "0.5.5",
-    "typescript": "~3.3.3333"
+    "dtslint": "0.7.1",
+    "typescript": "3.4.5"
   }
 }
