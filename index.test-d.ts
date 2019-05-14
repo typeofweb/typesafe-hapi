@@ -50,3 +50,15 @@ server.route({
     };
   },
 });
+
+server.route({
+  method: 'GET',
+  path: '/health-check',
+  options: {
+    description: 'Health check endpoint',
+    tags: ['api'],
+  },
+  handler(_request) {
+    return null;
+  },
+});
