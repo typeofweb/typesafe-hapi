@@ -1,1 +1,1 @@
-module.exports = require('hapi')
+module.exports = require('@hapi/hapi')
