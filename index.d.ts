@@ -21,7 +21,7 @@ import * as zlib from 'zlib';
 import { MimosOptions } from '@hapi/mimos';
 import { SealOptions, SealOptionsSub } from '@hapi/iron';
 import { ValidationOptions, SchemaMap, Schema, SchemaLike, SchemaValue } from 'typesafe-joi';
-import Podium = require('podium');
+import Podium = require('@hapi/podium');
 import { PolicyOptionVariants, EnginePrototypeOrObject, PolicyOptions, EnginePrototype, Policy, ClientApi, ClientOptions } from '@hapi/catbox';
 
 /* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
