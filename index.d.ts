@@ -353,7 +353,7 @@ export interface RequestRoute {
          *     requires any authentication.
          * [See docs](https://hapijs.com/api/17.0.1#-requestrouteauthaccessrequest)
          */
-        access(request: Request<any, any>): boolean;
+        access(request: Request<any, any, any>): boolean;
     };
 }
 
@@ -384,7 +384,7 @@ export interface RequestQuery {
  * HTTP server callback (which is available via [request.raw.req](https://github.com/hapijs/hapi/blob/master/API.md#request.raw)). The request properties change throughout
  * the request [lifecycle](https://github.com/hapijs/hapi/blob/master/API.md#request-lifecycle).
  */
-export interface Request<Payload extends SchemaLike, Query extends SchemaLike> extends Podium {
+export interface Request<Payload extends SchemaLike, Query extends SchemaLike, Params extends SchemaLike> extends Podium {
     /**
      * Application-specific state. Provides a safe place to store application data without potential conflicts with the framework. Should not be used by plugins which should use plugins[name].
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-requestapp)
@@ -464,7 +464,8 @@ export interface Request<Payload extends SchemaLike, Query extends SchemaLike> e
     /**
      * An object where each key is a path parameter name with matching value as described in [Path parameters](https://github.com/hapijs/hapi/blob/master/API.md#path-parameters).
      */
-    readonly params: Util.Dictionary<string>;
+    // readonly params: Util.Dictionary<string>;
+    readonly params: SchemaValue<Params>;
 
     /**
      * An array containing all the path params values in the order they appeared in the path.
@@ -1011,7 +1012,7 @@ export interface ResponseToolkit {
      * The [request] object. This is a duplication of the request lifecycle method argument used by
      * [toolkit decorations](https://github.com/hapijs/hapi/blob/master/API.md#server.decorate()) to access the current request.
      */
-    readonly request: Readonly<Request<any, any>>;
+    readonly request: Readonly<Request<any, any, any>>;
 
     /**
      * Used by the [authentication] method to pass back valid credentials where:
@@ -1406,7 +1407,7 @@ export type RouteOptionsPreArray = RouteOptionsPreAllOptions[];
 /**
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionspre)
  */
-export type RouteOptionsPreAllOptions = RouteOptionsPreObject | RouteOptionsPreObject[] | Lifecycle.Method<any, any, any>;
+export type RouteOptionsPreAllOptions = RouteOptionsPreObject | RouteOptionsPreObject[] | Lifecycle.Method<any, any, any, any>;
 
 /**
  * An object with:
@@ -1419,7 +1420,7 @@ export interface RouteOptionsPreObject {
     /**
      * a lifecycle method.
      */
-    method: Lifecycle.Method<any, any, any>;
+    method: Lifecycle.Method<any, any, any, any>;
     /**
      * key name used to assign the response of the method to in request.pre and request.preResponses.
      */
@@ -1623,7 +1624,7 @@ export type RouteOptionsSecure = boolean | RouteOptionsSecureObject;
  * Request input validation rules for various request components.
  * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidate)
  */
-export interface RouteOptionsValidate<Payload extends SchemaLike, Query extends SchemaLike> {
+export interface RouteOptionsValidate<Payload extends SchemaLike, Query extends SchemaLike, Params extends SchemaLike> {
     /**
      * Default value: none.
      * An optional object with error fields copied into every validation error response.
@@ -1672,7 +1673,7 @@ export interface RouteOptionsValidate<Payload extends SchemaLike, Query extends 
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidateparams)
      * @default true
      */
-    params?: RouteOptionsResponseSchema;
+    params?: Params;
 
     /**
      * Validation rules for incoming request payload (request body), where:
@@ -1720,7 +1721,7 @@ export interface RouteOptionsApp {
  * Each route can be customized to change the default behavior of the request lifecycle.
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#route-options)
  */
-export interface RouteOptions<Payload extends SchemaLike = any, Query extends SchemaLike = any, Response extends SchemaLike = any> {
+export interface RouteOptions<Payload extends SchemaLike = any, Query extends SchemaLike = any, Params extends SchemaLike = any, Response extends SchemaLike = any> {
     /**
      * Application-specific route configuration state. Should not be used by plugins which should use options.plugins[name] instead.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsapp)
@@ -1822,7 +1823,7 @@ export interface RouteOptions<Payload extends SchemaLike = any, Query extends Sc
      */
     // @todo
     // handler?: Lifecycle.Method<Payload, Query, Response> | object;
-    handler?: Lifecycle.Method<Payload, Query, Response>;
+    handler?: Lifecycle.Method<Payload, Query, Params, Response>;
 
     /**
      * Default value: none.
@@ -1967,7 +1968,7 @@ export interface RouteOptions<Payload extends SchemaLike = any, Query extends Sc
      * Request input validation rules for various request components.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-routeoptionsvalidate)
      */
-    validate?: RouteOptionsValidate<Payload, Query>;
+    validate?: RouteOptionsValidate<Payload, Query, Params>;
 }
 
 /* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
@@ -2017,7 +2018,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    authenticate(request: Request<any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
+    authenticate(request: Request<any, any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * A lifecycle method to authenticate the request payload.
@@ -2028,7 +2029,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    payload?(request: Request<any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
+    payload?(request: Request<any, any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * A lifecycle method to decorate the response with authentication headers before the response headers or payload is written.
@@ -2036,7 +2037,7 @@ export interface ServerAuthSchemeObject {
      * @param h the ResponseToolkit
      * @return the Lifecycle.ReturnValue
      */
-    response?(request: Request<any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
+    response?(request: Request<any, any, any>, h: ResponseToolkit): Lifecycle.ReturnValue;
 
     /**
      * a method used to verify the authentication credentials provided
@@ -2134,7 +2135,7 @@ export interface ServerAuth {
      * include verifying scope, entity, or other route properties.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-await-serverauthteststrategy-request)
      */
-    test(strategy: string, request: Request<any, any>): Promise<AuthenticationData>;
+    test(strategy: string, request: Request<any, any, any>): Promise<AuthenticationData>;
 
     /**
      * Verify a request's authentication credentials against an authentication strategy.
@@ -2146,7 +2147,7 @@ export interface ServerAuth {
      * are still valid (e.g. have not been revoked or expired). It does not include verifying scope,
      * entity, or other route properties.
      */
-    verify(request: Request<any, any>): Promise<void>;
+    verify(request: Request<any, any, any>): Promise<void>;
 }
 
 export type CachePolicyOptions<T> = PolicyOptionVariants<T> & {
@@ -2307,8 +2308,8 @@ export interface RequestEvent {
 }
 
 export type LogEventHandler = (event: LogEvent, tags: { [key: string]: true }) => void;
-export type RequestEventHandler = (request: Request<any, any>, event: RequestEvent, tags: { [key: string]: true }) => void;
-export type ResponseEventHandler = (request: Request<any, any>) => void;
+export type RequestEventHandler = (request: Request<any, any, any>, event: RequestEvent, tags: { [key: string]: true }) => void;
+export type ResponseEventHandler = (request: Request<any, any, any>) => void;
 export type RouteEventHandler = (route: RequestRoute) => void;
 export type StartEventHandler = () => void;
 export type StopEventHandler = () => void;
@@ -2484,7 +2485,7 @@ export interface ServerExtEventsObject {
 }
 
 export interface RouteExtObject {
-    method: Lifecycle.Method<any, any, any>;
+    method: Lifecycle.Method<any, any, any, any>;
     options?: ServerExtOptions;
 }
 
@@ -2526,7 +2527,7 @@ export interface ServerExtEventsRequestObject {
      * * * this - the object provided via options.bind or the current active context set with server.bind().
      * * request extension points: a lifecycle method.
      */
-    method: Lifecycle.Method<any, any, any> | Array<Lifecycle.Method<any, any, any>>;
+    method: Lifecycle.Method<any, any, any, any> | Array<Lifecycle.Method<any, any, any, any>>;
     /**
      * (optional) an object with the following:
      * * before - a string or array of strings of plugin names this method must execute before (on the same event). Otherwise, extension methods are executed in the order added.
@@ -2706,7 +2707,7 @@ export interface ServerInjectResponse extends Shot.ResponseObject {
     /**
      * the request object.
      */
-    request: Request<any, any>;
+    request: Request<any, any, any>;
 }
 
 /**
@@ -3162,7 +3163,7 @@ export interface HandlerDecorations {
  * * rules - route custom rules object. The object is passed to each rules processor registered with server.rules(). Cannot be used if route.options.rules is defined.
  * For context [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverrouteroute)
  */
-export interface ServerRoute<Payload extends SchemaLike, Query extends SchemaLike, Response extends SchemaLike> {
+export interface ServerRoute<Payload extends SchemaLike, Query extends SchemaLike, Params extends SchemaLike, Response extends SchemaLike> {
     /**
      * (required) the absolute path used to match incoming requests (must begin with '/'). Incoming requests are compared to the configured paths based on the server's router configuration. The path
      * can include named parameters enclosed in {} which will be matched against literal values in the request as described in Path parameters. For context [See
@@ -3188,7 +3189,7 @@ export interface ServerRoute<Payload extends SchemaLike, Query extends SchemaLik
      */
     // @todo
     // handler?: Lifecycle.Method<Payload, Response> | HandlerDecorations;
-    handler?: Lifecycle.Method<Payload, Query, Response>; // | HandlerDecorations;
+    handler?: Lifecycle.Method<Payload, Query, Params, Response>; // | HandlerDecorations;
 
     /**
      * additional route options. The options value can be an object or a function that returns an object using the signature function(server) where server is the server the route is being added to
@@ -3196,7 +3197,7 @@ export interface ServerRoute<Payload extends SchemaLike, Query extends SchemaLik
      */
     // @todo
     // options?: RouteOptions | ((server: Server) => RouteOptions);
-    options?: RouteOptions<Payload, Query, Response>;
+    options?: RouteOptions<Payload, Query, Params, Response>;
 
     /**
      * route custom rules object. The object is passed to each rules processor registered with server.rules(). Cannot be used if route.options.rules is defined.
@@ -3232,7 +3233,7 @@ export interface ServerStateCookieOptions {
      * cookie is automatically added to the response with the provided value. The value can be
      * a function with signature async function(request) where:
      */
-    autoValue?(request: Request<any, any>): void;
+    autoValue?(request: Request<any, any, any>): void;
 
     /**
      * encoding performs on the provided value before serialization. Options are:
@@ -3340,7 +3341,7 @@ export interface ServerState {
  * If the property is set to a function, the function uses the signature function(method) and returns the route default configuration.
  */
 export interface HandlerDecorationMethod {
-    (route: RouteOptions, options: any): Lifecycle.Method<any, any, any>;
+    (route: RouteOptions, options: any): Lifecycle.Method<any, any, any, any>;
     defaults?: RouteOptions | ((method: any) => RouteOptions);
 }
 
@@ -3612,9 +3613,9 @@ export class Server {
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverdecoratetype-property-method-options)
      */
     decorate(type: 'handler', property: DecorateName, method: HandlerDecorationMethod, options?: {apply?: boolean, extend?: boolean}): void;
-    decorate(type: 'request', property: DecorateName, method: (existing: ((...args: any[]) => any)) => (request: Request<any, any>) => DecorationMethod<Request<any, any>>, options: {apply: true, extend: true}): void;
-    decorate(type: 'request', property: DecorateName, method: (request: Request<any, any>) => DecorationMethod<Request<any, any>>, options: {apply: true, extend?: boolean}): void;
-    decorate(type: 'request', property: DecorateName, method: DecorationMethod<Request<any, any>>, options?: {apply?: boolean, extend?: boolean}): void;
+    decorate(type: 'request', property: DecorateName, method: (existing: ((...args: any[]) => any)) => (request: Request<any, any, any>) => DecorationMethod<Request<any, any, any>>, options: {apply: true, extend: true}): void;
+    decorate(type: 'request', property: DecorateName, method: (request: Request<any, any, any>) => DecorationMethod<Request<any, any, any>>, options: {apply: true, extend?: boolean}): void;
+    decorate(type: 'request', property: DecorateName, method: DecorationMethod<Request<any, any, any>>, options?: {apply?: boolean, extend?: boolean}): void;
     decorate(type: 'toolkit', property: DecorateName, method: (existing: ((...args: any[]) => any)) => DecorationMethod<ResponseToolkit>, options: {apply?: boolean, extend: true}): void;
     decorate(type: 'toolkit', property: DecorateName, method: DecorationMethod<ResponseToolkit>, options?: {apply?: boolean, extend?: boolean}): void;
     decorate(type: 'server', property: DecorateName, method: (existing: ((...args: any[]) => any)) => DecorationMethod<Server>, options: {apply?: boolean, extend: true}): void;
@@ -3694,7 +3695,7 @@ export class Server {
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-serverextevent-method-options)
      */
     ext(event: ServerExtType, method: ServerExtPointFunction, options?: ServerExtOptions): void;
-    ext(event: ServerRequestExtType, method: Lifecycle.Method<any, any, any>, options?: ServerExtOptions): void;
+    ext(event: ServerRequestExtType, method: Lifecycle.Method<any, any, any, any>, options?: ServerExtOptions): void;
 
     /**
      * Initializes the server (starts the caches, finalizes plugin registration) but does not start listening on the connection port.
@@ -3867,7 +3868,7 @@ export class Server {
      */
     // @todo
     // route<Payload extends SchemaLike, Response extends SchemaLike>(route: ServerRoute<Payload, Query, Response> | ServerRoute<Payload, Query, Response>[]): void;
-    route<Payload extends SchemaLike, Query extends SchemaLike, Response extends SchemaLike>(route: ServerRoute<Payload, Query, Response>): void;
+    route<Payload extends SchemaLike, Query extends SchemaLike, Params extends SchemaLike, Response extends SchemaLike>(route: ServerRoute<Payload, Query, Params, Response>): void;
 
     /**
      * Defines a route rules processor for converting route rules object into route configuration where:
@@ -3988,7 +3989,7 @@ export namespace Lifecycle {
      * * err - an error object availble only when the method is used as a failAction value.
      */
     // @todo
-    type Method<Payload extends SchemaLike, Query extends SchemaLike, Response extends SchemaLike> = (request: Request<Payload, Query>, h: ResponseToolkit, err?: Error) => Response extends undefined ? (null | Promise<null> | SchemaValue<Response> | Promise<SchemaValue<Response>>) : (SchemaValue<Response> | Promise<SchemaValue<Response>>);
+    type Method<Payload extends SchemaLike, Query extends SchemaLike, Params extends SchemaLike, Response extends SchemaLike> = (request: Request<Payload, Query, Params>, h: ResponseToolkit, err?: Error) => Response extends undefined ? (null | Promise<null> | SchemaValue<Response> | Promise<SchemaValue<Response>>) : (SchemaValue<Response> | Promise<SchemaValue<Response>>);
 
     /**
      * Each lifecycle method must return a value or a promise that resolves into a value. If a lifecycle method returns
@@ -4026,7 +4027,7 @@ export namespace Lifecycle {
      * * * err - the error object.
      * [See docs](https://github.com/hapijs/hapi/blob/master/API.md#-failaction-configuration)
      */
-    type FailAction = 'error' | 'log' | 'ignore' | Method<any, any, any>;
+    type FailAction = 'error' | 'log' | 'ignore' | Method<any, any, any, any>;
 }
 
 export namespace Util {
