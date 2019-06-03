@@ -4,7 +4,8 @@
     "strict": true,
     "esModuleInterop": true,
     "paths": {
-      "typesafe-hapi": ["./"]
+      "typesafe-hapi": ["./"],
+      "hapi": ["./"]
     },
     "lib": ["es2015"]
   }

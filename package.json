@@ -17,21 +17,23 @@
   ],
   "dependencies": {
     "@types/hapi__boom": "7.4.0",
-    "@types/hapi__catbox": "10.2.0",
+    "@types/hapi__catbox": "10.2.2",
     "@types/hapi__iron": "5.1.0",
     "@types/hapi__mimos": "4.1.0",
     "@types/hapi__podium": "3.4.0",
     "@types/hapi__shot": "4.1.0",
-    "@types/node": "*",
-    "typesafe-joi": "2.0.1"
+    "@types/node": "*"
   },
   "peerDependencies": {
     "@hapi/hapi": "^18.3.1",
-    "typescript": "~3.4.5",
-    "typesafe-joi": "^2.0.1"
+    "typescript": "3.5.1",
+    "typesafe-joi": "2.0.5"
   },
   "devDependencies": {
-    "dtslint": "0.7.1",
-    "typescript": "3.4.5"
+    "@hapi/hapi": "18.3.1",
+    "@hapi/joi": "15.0.3",
+    "dtslint": "0.7.7",
+    "typesafe-joi": "2.0.5",
+    "typescript": "3.5.1"
   }
 }

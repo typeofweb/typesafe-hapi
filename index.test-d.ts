@@ -1,4 +1,4 @@
-import Hapi from '.';
+import Hapi from 'hapi';
 import Joi from 'typesafe-joi';
 
 const server = new Hapi.Server();
