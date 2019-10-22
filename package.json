@@ -26,12 +26,11 @@
     "@types/node": "*"
   },
   "peerDependencies": {
-    "typescript": "3.5.2",
     "typesafe-joi": "2.0.6"
   },
   "devDependencies": {
     "@hapi/joi": "15.1.0",
-    "dtslint": "0.8.0",
+    "dtslint": "0.9.8",
     "typesafe-joi": "2.0.6",
     "typescript": "3.6.4"
   }
