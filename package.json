@@ -16,8 +16,8 @@
     "validation"
   ],
   "dependencies": {
-    "@hapi/hapi": "18.3.1",
-    "@types/hapi__boom": "7.4.0",
+    "@hapi/hapi": "18.4.0",
+    "@types/hapi__boom": "7.4.1",
     "@types/hapi__catbox": "10.2.2",
     "@types/hapi__iron": "5.1.0",
     "@types/hapi__mimos": "4.1.0",
@@ -33,6 +33,6 @@
     "@hapi/joi": "15.1.0",
     "dtslint": "0.8.0",
     "typesafe-joi": "2.0.6",
-    "typescript": "3.5.2"
+    "typescript": "3.6.4"
   }
 }
