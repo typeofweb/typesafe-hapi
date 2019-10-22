@@ -1,1 +1,1 @@
-module.exports = require('@hapi/hapi')
+module.exports = require('./node_modules/@hapi/hapi');
