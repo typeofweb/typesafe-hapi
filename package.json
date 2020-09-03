@@ -16,7 +16,7 @@
     "validation"
   ],
   "dependencies": {
-    "@hapi/hapi": "18.4.0",
+    "@hapi/hapi": "19.1.1",
     "@types/hapi__boom": "7.4.1",
     "@types/hapi__catbox": "10.2.2",
     "@types/hapi__iron": "5.1.0",
