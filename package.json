@@ -29,7 +29,7 @@
     "typesafe-joi": "2.0.6"
   },
   "devDependencies": {
-    "@hapi/joi": "15.1.0",
+    "@hapi/joi": "15.1.1",
     "dtslint": "0.9.8",
     "typesafe-joi": "2.0.6",
     "typescript": "3.6.4"
